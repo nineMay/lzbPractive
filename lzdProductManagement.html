@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SeaSeller</title>
+       <!-- angularjs包 -->
+       <script src="https://cdn.staticfile.org/angular.js/1.4.6/angular.min.js"></script>
+       <link rel="stylesheet" type="text/css" href="./lzdProductManagement.css">
+</head>
+<body>
+    <div  style="display:inline-block;width:100%;" ng-app="myApp" ng-controller="myCtrl" ng-init="current='sync'">
+       <ul class="mg-steps  sync" >
+        <li data-step="同步店铺" ng-class="{active:current=='sync'}" class="active">
+            <div class="bd">
+                <a ui-sref="order.sync" class="step" ng-click="clickSync()" >
+                    <i   class="fa fa-download">
+                        <img   class="imgColor" width="50%" src="./assets/images/同步.png"  alt="同步" title="同步">
+                    </i>
+                   同步
+                    
+                </a>
+                <span class="total ng-binding ng-hide" ng-show="stastic.sync" title="正在同步的店铺数量"></span>
+            </div>
+        </li>
+        <li  data-step="生成包裹" ng-class="{active:current=='order'}" >
+            <div class="bd">
+                <a ng-click="clickOrder()" class="step">
+                    <i class="fa fa-tasks">
+                        <img  class="imgColor" width="50%" src="./assets/images/订单.png"  alt="订单" title="订单">
+                    </i>
+                    订单
+                </a>
+                <span class="total ng-binding ng-hide" ng-show="stastic.order"></span>
+            </div>
+        </li>
+        <li data-step="打印面单" ng-class="{active:current=='barcode'}">
+            <div class="bd">
+                <a ng-click="clickBarcode()" class="step">
+                    <i class="fa fa-barcode">
+                        <img  class="imgColor" width="50%" src="./assets/images/打包.png"  alt="打包" title="打包">
+                    </i>
+                    打包
+                </a>
+                <span class="total ng-binding ng-hide" ng-show="stastic.barcode"></span>
+            </div>
+        </li>
+        <li class="last" ng-class="{active:current=='shipment'}">
+            <div class="bd">
+                <a ng-click="clickShipment()" class="step">
+                    <i class="fa fa-send">
+                        <img  class="imgColor" width="50%" src="./assets/images/发货.png"  alt="发货" title="发货">
+
+                    </i>
+                    发货
+                </a>
+                <span class="total ng-binding ng-hide" ng-show="stastic.shipment"></span>
+            </div>
+        </li>
+        <li class="" ng-class="{active:current=='abnormal'}">
+            <div class="bd">
+                <a ui-sref="order.abnormal.order" class="step
+                    abnormal" ng-click="clickAbnormal()">
+                    <i class="fa fa-eye-slash">
+                        <img  class="imgColor" width="50%" src="./assets/images/异常.png"  alt="异常" title="异常">
+
+                    </i>
+                    异常
+                </a>
+                <span class="total ng-binding ng-hide" ng-show="stastic.abnormal"></span>
+            </div>
+        </li>
+    </ul>
+
+    <div  ui-view="" class="ng-scope"><div class="container-fluid pos-rel container-tabset ng-scope">
+
+        <div ng-show="isSync" class="mui-search2">
+            <div class="alert alert-info alert-mini mar-b-0">
+                同步订单时，将执行:
+                <a href="./orderMarkingRules/orderMarkingRules.html" target="_blank" tooltip="符合规则订单进行标记(普通)">订单标记规则:<strong class="ng-binding">0</strong></a>
+                <a href="./orderConfirmationRules/orderConfirmationRules.html" target="_blank" tooltip="符合规则订单将移动到待确认">订单确认规则:<strong class="ng-binding">6</strong></a>
+                <a href="./automaticPackageRules/automaticPackageRules.html" target="_blank" tooltip="符合规则订单将生成指定渠道包裹">自动包裹规则:<strong class="ng-binding">5</strong></a>
+            </div>
+        </div>
+        <div ng-show="isSync" class="ng-isolate-scope">
+        <!-- <ul class="nav nav-tabs" ng-class="{'nav-stacked': vertical, 'nav-justified': justified}" ng-transclude="">
+            <li ng-class="{active: active, disabled: disabled}" ng-repeat="platform in platforms" class="ng-isolate-scope active">
+        <a ng-click="select()" ng-href="" tab-heading-transclude="" class="ng-binding"><tab-heading class="ng-scope">
+                    <span ng-class="{'has-platform':platform.count,'no-platform':!platform.count}" class="ng-binding has-platform">lazada</span>
+                    <div class="mg-sync ng-hide" ng-show="platform.num">
+                        <i class="refresh"></i>
+                        <em class="num ng-binding"></em>
+                    </div>
+                </tab-heading></a>
+    </li>
+
+    <li ng-class="{active: active, disabled: disabled}" ng-repeat="platform in vm.platforms" class="ng-isolate-scope">
+        <a ng-click="select()" ng-href="" tab-heading-transclude="" class="ng-binding"><tab-heading class="ng-scope">
+                    <span ng-class="{'has-platform':platform.count,'no-platform':!platform.count}" class="ng-binding has-platform">shopify</span>
+                    <div class="mg-sync ng-hide" ng-show="platform.num">
+                        <i class="refresh"></i>
+                        <em class="num ng-binding"></em>
+                    </div>
+                </tab-heading></a>
+    </li>
+   
+
+       
+        </ul> -->
+        <div class="tab-content">
+           <div  class="tab-pane ng-scope active"   >
+                
+                <div class="pad-t-10 ng-scope">
+                    <div class="mui-container" >
+                       <mg-scrollfix padding="20" ng-if="uname==puname" class="ng-scope ng-isolate-scope"><div class="mg-scrollfix" style="margin-top:0px;margin-bottom:0px;" ng-style="outerStyle">
+        <div ng-transclude="" ng-class="{'mg-scrollfix-fixed':fixed}" ng-style="myStyle">
+                            <div class="clearfix mui-scrollfix ng-scope">
+                                <div class="pull-left">
+                                    <a href="./addLazadaShop/addLazadaShop.html" target="_blank" class="btn btn-add btn-sm ng-binding"><i class="fa fa-fw fa-plus"></i>添加lazada店铺</a>
+                                  
+                                </div>
+                            </div>
+                        </div>
+    </div>
+    </mg-scrollfix>
+                        <table >
+                            <thead>
+                                <tr>
+                                    <th width="200">店铺ID</th>
+                                    <th width="300">店铺名称</th>
+                                    <th width="300">最近同步时间</th>
+                              
+                                    <th width="50">
+                                        <span class="hint--rounded hint--top"  data-hint="同步所有速卖通店铺">
+                                            <button class="btn btn-success btn-white btn-xs" ng-click="syncAll(platform)">同步全部</button>
+                                        </span>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                               <tr ng-repeat="item in shops" class="ng-scope">
+                                    <td class="ng-binding">{{item.id}}</td>
+                                    <td class="ng-binding">{{item.name}}</td>
+                                    <td>
+                                        <div class="text-success ng-binding" ng-hide="item.errorCode"><i class="fa fa-fw fa-check"></i>√{{item.lastTime}}</div>
+                                        <div class="text-danger ng-binding ng-hide" ng-show="item.errorCode"><i class="fa fa-fw fa-times"></i>[] </div>
+                                    </td>
+                                    <td>
+                                        <div class="progress progress-striped active ng-hide" ng-show="!item.errorCode &amp;&amp; item.percent">
+                                            <div class="progress-bar progress-bar-success" >
+                                            </div>
+                                            <div class="progress-tip"><span class="brd ng-binding"><i class="ace-icon fa fa-refresh"></i>正在同步</span>
+                                            </div>
+                                        </div>
+                                        <button ng-hide="platform.alias == 'kshop'" class="btn btn-success btn-white btn-xs" ng-click="syncShop($index, platform.site)">开始同步</button>
+                                    </td>
+                                </tr>
+                                
+                                <!-- <tr ng-repeat="item in platform.shops" class="ng-scope">
+                                    <td class="ng-binding"></td>
+                                    <td class="ng-binding">I Bags Store VN</td>
+                                    <td>
+                                        <div class="text-success ng-binding" ng-hide="item.errorCode"><i class="fa fa-fw fa-check"></i>2022.08.23 17:46</div>
+                                        <div class="text-danger ng-binding ng-hide" ng-show="item.errorCode"><i class="fa fa-fw fa-times"></i>[] </div>
+                                    </td>
+                             
+                                    <td>
+                                        <div class="progress progress-striped active ng-hide" ng-show="!item.errorCode &amp;&amp; item.percent">
+                                            <div class="progress-bar progress-bar-success" >
+                                            </div>
+                                            <div class="progress-tip"><span class="brd ng-binding"><i class="ace-icon fa fa-refresh"></i>正在同步</span>
+                                            </div>
+                                        </div>
+                                        <button ng-hide="platform.alias == 'kshop'" class="btn btn-success btn-white btn-xs" ng-click="syncShop($index, platform.site)">开始同步</button>
+                                      
+                                    </td>
+                                </tr> -->
+                                </tbody>
+                        </table>
+                      
+                    </div>
+                </div>
+          
+            </div>
+        </div>
+   
+   
+    </div>
+    <div ng-show="isOrder">
+        <p>订单订单！！！</p>
+    </div>
+
+    <div ng-show="isBarcode">
+        <p>打包！！！</p>
+    </div>
+
+    <div ng-show="isShipment">
+        <p>发货！！！！</p>
+    </div>
+
+    <div ng-show="isAbnormal">
+        <p>异常！！！</p>
+    </div>
+
+ 
+
+
+
+    </div>
+   
+</div>
+    </div>
+
+    <script>
+        var app=angular.module('myApp',[]);
+
+        app.controller('myCtrl',function($scope){
+
+            $scope.isSync=true;
+            $scope.isOrder=false;
+            $scope.isBarcode=false;
+            $scope.isShipment=false;
+            $scope.isAbnormal=false;
+            $scope.current='sync';
+
+            //点击同步
+            $scope.clickSync=function(){
+                $scope.isSync=true;
+                $scope.isOrder=false;
+            $scope.isBarcode=false;
+            $scope.isShipment=false;
+            $scope.isAbnormal=false;
+            $scope.current='sync';
+            };
+
+            //点击订单
+            $scope.clickOrder=function(){
+                $scope.isOrder=true;
+                $scope.isSync=false;
+            $scope.isBarcode=false;
+            $scope.isShipment=false;
+            $scope.isAbnormal=false;
+            $scope.current='order';
+            };
+
+            //点击打包
+            $scope.clickBarcode=function(){
+                $scope.isOrder=false;
+                $scope.isSync=false;
+            $scope.isBarcode=true;
+            $scope.isShipment=false;
+            $scope.isAbnormal=false;
+            $scope.current='barcode';
+            };
+
+            //点击发货
+            $scope.clickShipment=function(){
+                $scope.isOrder=false;
+                $scope.isSync=false;
+            $scope.isBarcode=false;
+            $scope.isShipment=true;
+            $scope.isAbnormal=false; 
+            $scope.current='shipment';
+            };
+
+            //点击异常
+            $scope.clickAbnormal=function(){
+                $scope.isOrder=false;
+                $scope.isSync=false;
+            $scope.isBarcode=false;
+            $scope.isShipment=false;
+            $scope.isAbnormal=true; 
+            $scope.current='abnormal';
+            };
+
+
+            $scope.platforms=[
+                {count:1,num:1},
+                {count:2,num:2},
+            ];
+           
+
+            $scope.stastic={};
+            $scope.shops=[
+                {id:'hkvcb003@163.com',name:'I treasure Store VN',lastTime:'2022.09.29 17:41',errorCode:false},
+                {id:'hkvcb004@163.com',name:'I Bags Store VN',lastTime:'2022.09.29 17:41',errorCode:false},
+                {id:'hkvcb005@163.com',name:'555',lastTime:'2022.09.29 17:41',errorCode:false},
+                {id:'hkvcb006@163.com',name:'666',lastTime:'2022.09.29 17:41',errorCode:false},
+                {id:'hkvcb007@163.com',name:'777',lastTime:'2022.09.29 17:41',errorCode:false},
+                {id:'hkvcb008@163.com',name:'I treasure Store VN',lastTime:'2022.09.29 17:41',errorCode:false},
+                {id:'hkvcb009@163.com',name:'I treasure Store VN',lastTime:'2022.09.29 17:41',errorCode:false},
+                {id:'hkvcb010@163.com',name:'I treasure Store VN',lastTime:'2022.09.29 17:41',errorCode:false},
+                {id:'hkvcb011@163.com',name:'I treasure Store VN',lastTime:'2022.09.29 17:41',errorCode:false},
+                {id:'hkvcb012@163.com',name:'I treasure Store VN',lastTime:'2022.09.29 17:41',errorCode:false}
+            ];
+            $scope.tabs=[1,1];
+        })
+    </script>
+    
+</body>
+</html>
